@@ -1,0 +1,6 @@
+Correct result: (quote adsf)
+Correct result: (define x 3)
+Correct result: (1 2 . 3)
+Correct result: #(i j k)
+Correct result: (quasiquote (a b (unquote-splicing (c d (unquote f) (quote (g h))))))
+Done.

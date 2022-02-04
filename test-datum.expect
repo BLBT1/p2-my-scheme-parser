@@ -1,0 +1,10 @@
+Correct result: hello
+Correct result: 3.14
+Correct result: "hello world"
+Correct result: #t
+Correct result: #\a
+Correct result: (quote adsf)
+Correct result: (define x 3)
+Correct result: (quasiquote (a b (unquote-splicing (c d (unquote f) (quote (g h))))))
+Correct result: (3 4 "." ")" 5)
+Done.

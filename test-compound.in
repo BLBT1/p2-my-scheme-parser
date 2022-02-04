@@ -1,0 +1,5 @@
+'adsf 'adsf | (define x 3)(define x 3) |
+(1 2 . 3)(1 2 . 3)|
+#(i j k)#(i j k)|
+`(a b ,@ (c d , f '(g h)))
+`(a b ,@ (c d , f '(g h)))|

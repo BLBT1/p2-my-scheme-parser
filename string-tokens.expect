@@ -1,0 +1,3 @@
+(string "hello world")
+(string "hello\nworld")
+(string "string with \\\"escape\"\\ sequences")

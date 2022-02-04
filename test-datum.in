@@ -1,0 +1,7 @@
+hello hello | +3.14 +3.14 |
+"hello world""hello world" | #t #t | #\a #\a |
+'adsf 'adsf | (define x 3)(define x 3)|
+`(a b ,@ (c d , f '(g h)))
+`(a b ,@ (c d , f '(g h)))|
+(3 4 "." ")" 5)
+(3 4 "." ")" 5)|

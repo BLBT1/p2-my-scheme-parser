@@ -1,0 +1,7 @@
+Correct result: hello
+Correct result: 3.14
+Correct result: 0.7
+Correct result: "hello world"
+Correct result: #t
+Correct result: #\a
+Done.
