@@ -84,7 +84,15 @@
 
 ; Read the rest of a boolean literal.
 (define (read-boolean-tail)
-  '() ; replace with your code
+  (let (
+    (next-char (get-non-eof-char)) 
+    (cond 
+      ((char=? next-char #\t) 
+        (token-make 'boolean #t))
+      (char=? next-char #\f)
+        token-make 'boolean #f)
+      (else (error "not a boolean"))
+  ))
 )
 
 ;;;;;;;;;;;;;;;;;;;
@@ -98,8 +106,31 @@
 )
 
 ; Read the rest of a character literal.
+;; how to handle # \newline ?
 (define (read-character-tail)
-  '() ; replace with your code
+ (let ((next-char (get-non-eof-char)))
+    (cond
+      ((char=? next-char #\s)
+        (let ((next-char (get-non-eof-char)))
+          (if (char=? next-char #\p)
+            (let ((next-char (get-non-eof-char)))
+              (if (char=? next-char #\a)
+                (let ((next-char (get-non-eof-char)))
+                  (if (char=? next-char #\c)
+                    (let ((next-char (get-non-eof-char)))
+                      (if (char=? next-char #\e)
+                        (if (delimiter? (peek-char))
+                          (token-make 'character #\space)
+                          (error "not a character"))
+                        (error "not a character")))
+                  (error "not a character")))
+              (error "not a character")))
+            (error "not a character"))))
+      ((not (delimiter? (peek-char)))
+        (error "not a character"))
+      (else (token-make 'character next-char))
+    )
+  )
 )
 
 
@@ -115,13 +146,100 @@
   (and (char>=? char #\0) (char<=? char #\9))
 )
 
+; Determine if the given character is a dot.
+(define (dot? char)
+  (char=? char #\.)
+)
+
 ; Read a number token.
 (define (read-number)
-  '() ; replace with your code
+  (let ((next-char (get-non-eof-char)))
+    (cond
+      ((sign? next-char)
+        (read-number-tail (string next-char))
+      )
+      ((digit? next-char)
+        (read-integer-tail (string next-char))
+      )
+      ((dot? next-char)
+        (read-decimal-tail (string next-char))
+      )
+      (else (error "not a number"))
+    )
+  )
+)
+
+; Read the rest of the number token.
+(define (read-number-tail read-so-far)
+  (let ((next-char (get-non-eof-char)))
+    (cond
+      ((digit? next-char)
+        (read-integer-tail (string-append read-so-far (string next-char))))
+      ((dot? next-char)
+        (read-decimal-tail (string-append read-so-far (string next-char))))
+      (else (error "not a number")))
+  )
+)
+
+; Read the rest of the integer token.
+(define (read-integer-tail read-so-far)
+  (if (delimiter? (peek-char))
+    (token-make 'number (string->number read-so-far))
+    (let ((next-char (get-non-eof-char)))
+      (cond
+        ((dot? next-char) ;;; (string char) <- parse a char to a string
+          (read-decimal-tail (string-append read-so-far (string next-char))))
+        ((digit? next-char)
+          (read-integer-tail (string-append read-so-far (string next-char))))
+        (else (error "not a number"))))
+  )
+)
+
+
+(define (read-decimal-tail read-so-far)
+  (if (delimiter? (peek-char))
+    (token 'number' (string->number read-so-far))
+    (let 
+        (cond 
+          ((digit? next-char) 
+            (read-decimal-tail (string-append read-so-far (srting next-char)))
+          )
+          (else (error "not a number"))
+      )
+    )
+  )
 )
 
 
 ;;;;;;;;;;;;;;;;;;;
+
+; Determine if the given character is a special initial.
+(define (special-initial? char)
+  (or (char=? char #\!) (char=? char #\$) (char=? char #\%) (char=? char #\&) (char=? char #\*)
+    (char=? char #\/) (char=? char #\:) (char=? char #\<) (char=? char #\=) (char=? char #\>)
+    (char=? char #\?) (char=? char #\^) (char=? char #\_) (char=? char #\~))
+)
+
+; Determine if the given character is an initial.
+(define (initial? char)
+  (or (char-alphabetic? char) (special-initial? char))
+)
+
+; Determine if the given character is a special subsequent.
+(define (special-subsequent? char)
+  (or (char=? char #\+) (char=? char #\-) (char=? char #\.) (char=? char #\@))
+)
+
+; Determine if the given character is a subsequent.
+(define (subsequent? char)
+  (or (initial? char) (digit? char) (special-subsequent? char))
+)
+
+; Determine if the given char is a perculiar identifier.
+(define (peculiar-identifier? char)
+  (or (char=? char #\+) (char=? char #\-) (char=? char #\.))
+)
+
 
 
 ; Read an identifier token.
